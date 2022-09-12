@@ -18,51 +18,41 @@ using System.Windows.Shapes;
 namespace Turisticka_agencija
 {
     /// <summary>
-    /// Interaction logic for Destinacija.xaml
+    /// Interaction logic for Klijent.xaml
     /// </summary>
-    public partial class Destinacija : Window
+    public partial class Klijent : Window
     {
-        public Destinacija()
+        public Klijent()
         {
             InitializeComponent();
             SqlConnection konekcija = new SqlConnection();
             konekcija.ConnectionString = ConfigurationManager.ConnectionStrings["Turisticka_agencija"].ConnectionString;
             konekcija.Open();
             SqlCommand komanda = new SqlCommand();
-            komanda.CommandText = "SELECT * from Destinacija ";
+            komanda.CommandText = "SELECT * from Klijent ";
             komanda.Connection = konekcija;
-            //Grid.ItemsSource = command.ExecuteReader();
+            //Grid.ItemsSource = komanda.ExecuteReader();
             //Grid.Visibility = Visibility.Visible;
             SqlDataAdapter dataAdapter = new SqlDataAdapter(komanda);
             DataTable dataTable = new DataTable("Turisticka_agencija");
             dataAdapter.Fill(dataTable);
+
             Grid.ItemsSource = dataTable.DefaultView;
         }
 
-        public bool isValid()
+        private void Grid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (txtKodDrzave.Text == string.Empty)
+            DataGrid dg = (DataGrid)sender;
+            DataRowView row_selected = dg.SelectedItem as DataRowView;
+            if (row_selected != null)
             {
-                MessageBox.Show("Kod Drzave je potreban", "Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                return false;
+                txtID.Text = row_selected["ID"].ToString();
+                txtKodKlienta.Text = row_selected["KodKlijenta"].ToString();
+                txtIme.Text = row_selected["Ime"].ToString();
+                txtPrezime.Text = row_selected["Prezime"].ToString();
+                txtTelefon.Text = row_selected["Telefon"].ToString();
+                txtAdresa.Text = row_selected["Adresa"].ToString();
             }
-
-            if (txtMesto.Text == string.Empty)
-            {
-                MessageBox.Show("Mesto je potrebano", "Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                return false;
-            }
-            if (txtTipOdmora.Text == string.Empty)
-            {
-                MessageBox.Show("Tip Odmora je potreban", "Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                return false;
-            }
-            if (txtKontinent.Text == string.Empty)
-            {
-                MessageBox.Show("Kontinent je potreban", "Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                return false;
-            }
-            return true;
         }
 
         private void btnDodaj_Click(object sender, RoutedEventArgs e)
@@ -73,23 +63,28 @@ namespace Turisticka_agencija
                 konekcija.ConnectionString = ConfigurationManager.ConnectionStrings["Turisticka_agencija"].ConnectionString;
                 konekcija.Open();
                 SqlCommand komanda = new SqlCommand();
-                komanda.CommandText = "INSERT INTO Destinacija (KodDrzave,Drzava,Mesto,Tip_Odmora,Kontinent) VALUES (@Kod, @Drzave,@Mesto,@TipOdmora,@Kontinent) ";
-                komanda.Parameters.AddWithValue("@Kod", txtKodDrzave.Text);
-                komanda.Parameters.AddWithValue("@Drzave", txtDrzava.Text);
-                komanda.Parameters.AddWithValue("@Mesto", txtMesto.Text);
-                komanda.Parameters.AddWithValue("@TipOdmora", txtTipOdmora.Text);
-                komanda.Parameters.AddWithValue("@Kontinent", txtKontinent.Text);
+                komanda.CommandText = "INSERT INTO Klijent (KodKlijenta,Ime,Prezime,Telefon,Adresa) VALUES (@Kod, @Ime,@Prezime,@Telefon,@Adresa) ";
+                komanda.Parameters.AddWithValue("@Kod", txtKodKlienta.Text);
+                komanda.Parameters.AddWithValue("@Ime", txtIme.Text);
+                komanda.Parameters.AddWithValue("@Prezime", txtPrezime.Text);
+                komanda.Parameters.AddWithValue("@Telefon", txtTelefon.Text);
+                komanda.Parameters.AddWithValue("@Adresa", txtAdresa.Text);
                 komanda.Connection = konekcija;
                 int provera = komanda.ExecuteNonQuery();
                 if (provera == 1)
                 {
                     MessageBox.Show("Uspešno ste uneli");
-                    komanda.CommandText = "SELECT * FROM Destinacija ";
+                    komanda.CommandText = "SELECT * FROM Klijent ";
                     komanda.Connection = konekcija;
                     Grid.ItemsSource = komanda.ExecuteReader();
                     txtID.Text = "";
-                    Destinacija destinacija = new Destinacija();
-                    destinacija.Show();
+                    txtIme.Text = "";
+                    txtKodKlienta.Text = "";
+                    txtAdresa.Text = "";
+                    txtPrezime.Text = "";
+                    txtTelefon.Text = "";
+                    Klijent klijent = new Klijent();
+                    klijent.Show();
                     this.Close();
                 }
                 else
@@ -99,30 +94,61 @@ namespace Turisticka_agencija
             }
         }
 
+        public bool isValid()
+        {
+            if (txtKodKlienta.Text == string.Empty)
+            {
+                MessageBox.Show("Kod klijenta je potreban", "Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+            if (txtIme.Text == string.Empty)
+            {
+                MessageBox.Show("Ime je potrebno", "Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+            if (txtPrezime.Text == string.Empty)
+            {
+                MessageBox.Show("Prezime je potrebno", "Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+            if (txtTelefon.Text == string.Empty)
+            {
+                MessageBox.Show("Telefon je potreban", "Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+            if (txtAdresa.Text == string.Empty)
+            {
+                MessageBox.Show("Adresa je potrebna", "Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+
+            return true;
+        }
+
         private void btnIzmeni_Click(object sender, RoutedEventArgs e)
         {
             SqlConnection konekcija = new SqlConnection();
             konekcija.ConnectionString = ConfigurationManager.ConnectionStrings["Turisticka_agencija"].ConnectionString;
             konekcija.Open();
             SqlCommand komanda = new SqlCommand();
-            komanda.CommandText = "update Destinacija set KodDrzave = @KodDrzave,Drzava=@Drzava,Mesto = @Mesto,Tip_Odmora=@TipOdmora,Kontinent= @Kontinent where ID = @ID";
+            komanda.CommandText = "update Klijent set KodKlijenta = @KodKlienta,Ime=@Ime,Prezime = @Prezime,Telefon=@Telefon,Adresa = @Adresa where ID = @ID";
             komanda.Parameters.AddWithValue("@ID", txtID.Text);
-            komanda.Parameters.AddWithValue("@KodDrzave", txtKodDrzave.Text);
-            komanda.Parameters.AddWithValue("@Drzava", txtDrzava.Text);
-            komanda.Parameters.AddWithValue("@Mesto", txtMesto.Text);
-            komanda.Parameters.AddWithValue("@TipOdmora", txtTipOdmora.Text);
-            komanda.Parameters.AddWithValue("@Kontinent", txtKontinent.Text);
+            komanda.Parameters.AddWithValue("@KodKlienta", txtKodKlienta.Text);
+            komanda.Parameters.AddWithValue("@Ime", txtIme.Text);
+            komanda.Parameters.AddWithValue("@Prezime", txtPrezime.Text);
+            komanda.Parameters.AddWithValue("@Telefon", txtTelefon.Text);
+            komanda.Parameters.AddWithValue("@Adresa", txtAdresa.Text);
             komanda.Connection = konekcija;
             int provera = komanda.ExecuteNonQuery();
             if (provera == 1)
             {
                 MessageBox.Show("Uspešno ste izmenili");
-                komanda.CommandText = "SELECT * FROM Destinacija ";
+                komanda.CommandText = "SELECT * FROM Klijent ";
                 komanda.Connection = konekcija;
                 Grid.ItemsSource = komanda.ExecuteReader();
                 txtID.Text = "";
-                Destinacija destinacija = new Destinacija();
-                destinacija.Show();
+                Klijent klijent = new Klijent();
+                klijent.Show();
                 this.Close();
             }
             else
@@ -137,19 +163,24 @@ namespace Turisticka_agencija
             konekcija.ConnectionString = ConfigurationManager.ConnectionStrings["Turisticka_agencija"].ConnectionString;
             konekcija.Open();
             SqlCommand komanda = new SqlCommand();
-            komanda.CommandText = "Delete from Destinacija where ID= @ID ";
+            komanda.CommandText = "Delete from Klijent where ID= @ID ";
             komanda.Parameters.AddWithValue("@ID", txtID.Text);
             komanda.Connection = konekcija;
             int provera = komanda.ExecuteNonQuery();
             if (provera == 1)
             {
                 MessageBox.Show("Uspešno ste obrisali");
-                komanda.CommandText = "SELECT * FROM Destinacija";
+                komanda.CommandText = "SELECT * FROM Klijent";
                 komanda.Connection = konekcija;
                 Grid.ItemsSource = komanda.ExecuteReader();
                 txtID.Text = "";
-                Destinacija destinacija = new Destinacija();
-                destinacija.Show();
+                txtIme.Text = "";
+                txtKodKlienta.Text = "";
+                txtAdresa.Text = "";
+                txtPrezime.Text = "";
+                txtTelefon.Text = "";
+                Klijent klijent = new Klijent();
+                klijent.Show();
                 this.Close();
             }
             else
@@ -163,22 +194,6 @@ namespace Turisticka_agencija
             Meni meni = new Meni();
             meni.Show();
             this.Close();
-        }
-
-        private void Grid_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            DataGrid dg = (DataGrid)sender;
-            DataRowView row_selected = dg.SelectedItem as DataRowView;
-            if (row_selected != null)
-            {
-                txtID.Text = row_selected["ID"].ToString();
-                txtKodDrzave.Text = row_selected["KodDrzave"].ToString();
-                txtDrzava.Text = row_selected["Drzava"].ToString();
-                txtMesto.Text = row_selected["Mesto"].ToString();
-                txtTipOdmora.Text = row_selected["Tip_Odmora"].ToString();
-                txtKontinent.Text = row_selected["Kontinent"].ToString();
-
-            }
         }
     }
 }
