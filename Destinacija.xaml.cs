@@ -25,16 +25,16 @@ namespace Turisticka_agencija
         public Destinacija()
         {
             InitializeComponent();
-            SqlConnection konekcija = new SqlConnection(@"Data Source=DESKTOP-T4T8KF4\SQLEXPRESS;Initial Catalog=Turisticka agencija;Integrated Security=True");
-            if (konekcija.State == ConnectionState.Closed)
-                konekcija.Open();
+            SqlConnection konekcija = new SqlConnection();
+            konekcija.ConnectionString = ConfigurationManager.ConnectionStrings["Turisticka_agencija"].ConnectionString;
+            konekcija.Open();
             SqlCommand komanda = new SqlCommand();
             komanda.CommandText = "SELECT * from Destinacija ";
             komanda.Connection = konekcija;
             //Grid.ItemsSource = command.ExecuteReader();
             //Grid.Visibility = Visibility.Visible;
             SqlDataAdapter dataAdapter = new SqlDataAdapter(komanda);
-            DataTable dataTable = new DataTable("Turisticka agencija");
+            DataTable dataTable = new DataTable("Turisticka_agencija");
             dataAdapter.Fill(dataTable);
             Grid.ItemsSource = dataTable.DefaultView;
         }
@@ -69,9 +69,9 @@ namespace Turisticka_agencija
         {
             if (isValid())
             {
-                SqlConnection konekcija = new SqlConnection(@"Data Source=DESKTOP-T4T8KF4\SQLEXPRESS;Initial Catalog=Turisticka agencija;Integrated Security=True");
-                if (konekcija.State == ConnectionState.Closed)
-                    konekcija.Open();
+                SqlConnection konekcija = new SqlConnection();
+                konekcija.ConnectionString = ConfigurationManager.ConnectionStrings["Turisticka_agencija"].ConnectionString;
+                konekcija.Open();
                 SqlCommand komanda = new SqlCommand();
                 komanda.CommandText = "INSERT INTO Destinacija (KodDrzave,Drzava,Mesto,Tip_Odmora,Kontinent) VALUES (@Kod, @Drzave,@Mesto,@TipOdmora,@Kontinent) ";
                 komanda.Parameters.AddWithValue("@Kod", txtKodDrzave.Text);
@@ -101,9 +101,9 @@ namespace Turisticka_agencija
 
         private void btnIzmeni_Click(object sender, RoutedEventArgs e)
         {
-            SqlConnection konekcija = new SqlConnection(@"Data Source=DESKTOP-T4T8KF4\SQLEXPRESS;Initial Catalog=Turisticka agencija;Integrated Security=True");
-            if (konekcija.State == ConnectionState.Closed)
-                konekcija.Open();
+            SqlConnection konekcija = new SqlConnection();
+            konekcija.ConnectionString = ConfigurationManager.ConnectionStrings["Turisticka_agencija"].ConnectionString;
+            konekcija.Open();
             SqlCommand komanda = new SqlCommand();
             komanda.CommandText = "update Destinacija set KodDrzave = @KodDrzave,Drzava=@Drzava,Mesto = @Mesto,Tip_Odmora=@TipOdmora,Kontinent= @Kontinent where ID = @ID";
             komanda.Parameters.AddWithValue("@ID", txtID.Text);
@@ -133,9 +133,9 @@ namespace Turisticka_agencija
 
         private void btnObrisi_Click(object sender, RoutedEventArgs e)
         {
-            SqlConnection konekcija = new SqlConnection(@"Data Source=DESKTOP-T4T8KF4\SQLEXPRESS;Initial Catalog=Turisticka agencija;Integrated Security=True");
-            if (konekcija.State == ConnectionState.Closed)
-                konekcija.Open();
+            SqlConnection konekcija = new SqlConnection();
+            konekcija.ConnectionString = ConfigurationManager.ConnectionStrings["Turisticka_agencija"].ConnectionString;
+            konekcija.Open();
             SqlCommand komanda = new SqlCommand();
             komanda.CommandText = "Delete from Destinacija where ID= @ID ";
             komanda.Parameters.AddWithValue("@ID", txtID.Text);
